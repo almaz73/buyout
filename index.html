@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title></title>
+		<style>
+			body {
+				font-family: Gilroy, system-ui;
+				margin: 0;
+				padding: 0;
+				scrollbar-gutter: stable;
+			}
+			main {
+				max-width: 1200px;
+				margin: auto;
+			}
+
+			@media not (min-width: 1240px) {
+				main {
+					max-width: calc(100% - 40px);
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<div id="app"></div>
+		</main>
+		<script type="module" src="/src/main.js"></script>
+	</body>
+</html>
