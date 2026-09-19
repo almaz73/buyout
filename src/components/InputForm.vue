@@ -299,6 +299,7 @@
 </template>
 <script setup>
 import { ref } from 'vue';
+import {ElMessageBox} from "element-plus";
 // import { Calendar } from '@element-plus/icons-vue';
 // import { lo } from 'element-plus/es/locales.mjs';
 import {
@@ -309,8 +310,10 @@ import {
 	numberWithSpaces,
 	simplePhone,
 	checkMili,
-} from '../GlobFuntions.js';
+} from './GlobFuntions.js';
+import { usePubStore } from './pubStore.js';
 
+const pubStore = usePubStore();
 const auto = ref({
 	vin: '',
 	brandId: '',
@@ -327,6 +330,7 @@ const auto = ref({
 	fullName: '',
 	mileage: '',
 });
+const isDatas = ref();
 const brands = ref([]);
 const models = ref([]);
 const generations = ref([]);
@@ -334,8 +338,29 @@ const years = ref([]);
 const modifications = ref([]);
 const cities = ref([]);
 const formRef = ref();
+const isWaiting = ref(false);
+const mileage500 = ref(null)
 
 let timerSave = null;
+
+let datas = localStorage.getItem('datas')
+if (datas) {
+  isDatas.value = true
+  fillDields(JSON.parse(datas))
+}
+
+function fillDields(datas) {
+  // заполняем сохраненными данными
+  auto.value = {}
+
+  Object.assign(auto.value, datas)
+  if (auto.value.brandId) getModels(auto.value.brandId, true)
+  if (auto.value.modelId) getGenerations(auto.value.modelId, true)
+  if (auto.value.generationId) getModifications(auto.value.generationId, true)
+  if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 1000
+
+  auto.value.email = auto.value.email || ''
+}
 
 function datasSaved() {
 	// локально запоминаем введенные данные
@@ -344,7 +369,7 @@ function datasSaved() {
 		if (el[1]) newDatas[el[0]] = el[1];
 	});
 	if (Object.keys(newDatas).length) {
-		// isDatas.value = true
+		isDatas.value = true;
 		saveF(newDatas);
 	}
 
@@ -357,32 +382,111 @@ function datasSaved() {
 	}
 }
 
-function getModels() {
-	console.log('getModels');
-}
-
-function getGenerations() {
-	console.log('getGenerations');
-}
-
-function setYears() {
-	console.log('setYears');
-}
-
 function changeMiles() {
 	if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 5000;
 }
 
-// function remove() {
-//   localStorage.removeItem('datas')
-//   isDatas.value = null
-//   auto.value = {}
-//   resetForm(formRef.value)
-//   models.value = []
-//   generations.value = []
-//   modifications.value = []
-//   years.value = []
-// }
-function removeDatas() {}
+function remove() {
+	localStorage.removeItem('datas');
+	isDatas.value = null;
+	auto.value = {};
+	resetForm(formRef.value);
+	models.value = [];
+	generations.value = [];
+	modifications.value = [];
+	years.value = [];
+}
+
+function removeDatas() {
+  ElMessageBox.confirm('Вы действительно хотите удалить?', 'Внимание', {
+    confirmButtonText: 'Да',
+    cancelButtonText: 'Нет'
+  })
+      .then(() => remove())
+}
 function nextPage() {}
+
+isWaiting.value = true;
+pubStore.getBrands().then(res => {
+	brands.value = res.data;
+	isWaiting.value = false;
+});
+
+function getModels(id, noClear) {
+	// удалим связку
+	if (!noClear) {
+		auto.value.modelId = null;
+		auto.value.generationId = null;
+		auto.value.modificationId = null;
+		auto.value.yearReleased = null;
+
+		models.value = [];
+		generations.value = [];
+		modifications.value = [];
+		years.value = [];
+	}
+
+	if (!id) return false;
+
+	isWaiting.value = true;
+
+	pubStore.getModels(id).then(res => {
+		models.value = res.data;
+		isWaiting.value = false;
+		datasSaved();
+	});
+}
+
+function setYears(id, noClear) {
+	if (!noClear) {
+		auto.value.yearReleased = null;
+		auto.value.modificationId = null;
+		modifications.value = [];
+	}
+
+	let item = generations.value?.find(el => el.id === id);
+
+	years.value = [];
+	if (!item) return false;
+
+	for (let year = item.yearTo; year >= item.yearFrom; year--) {
+		years.value.push(year);
+	}
+}
+
+function getGenerations(id, noClear) {
+	if (!noClear) {
+		auto.value.generationId = null;
+		auto.value.modificationId = null;
+		auto.value.yearReleased = null;
+		generations.value = [];
+		modifications.value = [];
+	}
+	if (!id) return false;
+	isWaiting.value = true;
+	pubStore.getGenerations(id).then(res => {
+		generations.value = res.data;
+		isWaiting.value = false;
+		if (auto.value.generationId) setYears(auto.value.generationId, true);
+		datasSaved();
+	});
+}
+
+function getModifications(id) {
+	if (!id) return false;
+
+	setYears(id, true);
+	isWaiting.value = true;
+	pubStore.getModifications(id).then(res => {
+		modifications.value = res.data;
+		datasSaved();
+		isWaiting.value = false;
+	});
+}
+
+function getComplectations(id) {
+	pubStore.getComplectations(id).then(() => {
+		datasSaved();
+	});
+}
 </script>

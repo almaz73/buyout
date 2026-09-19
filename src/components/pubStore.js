@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
-import cache from '@/utils/globalCach.ts'
 import axios from "axios";
+
+const cache = {}
 
 export const usePubStore = defineStore("pubStore", {
     state: () => ({
@@ -12,19 +13,19 @@ export const usePubStore = defineStore("pubStore", {
             const res = await axios.get(`/api/auto/getBrands`)
             return (cache['getBrands'] = res)
         },
-        async getModels(id:number) {
+        async getModels(id) {
             return await axios.get(`/api/auto/getModels?brandId=${id}`)
         },
-        async getGenerations(id:number) {
+        async getGenerations(id) {
             return await axios.get(`/api/auto/getGenerations?modelId=${id}`)
         },
-        async getModifications(id:number) {
+        async getModifications(id) {
             return await axios.get(`/api/auto/getModifications?generationId=${id}`)
         },
-        async getComplectations(id:number) {
+        async getComplectations(id) {
             return await axios.get(`/api/auto/getComplectations?modificationId=${id}`)
         },
-        async saveExternalAppeal(params: any) {
+        async saveExternalAppeal(params) {
             return await axios.post(`/api/Appeals/PostExternalAppeal`, params)
         },
 
