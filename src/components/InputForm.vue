@@ -72,7 +72,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair">
+			<div class="form-pair" v-if="auto.brandId || auto.modelId">
 				<div class="input-group">
 					<span>Поколение</span>
 					<el-form-item
@@ -124,7 +124,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair">
+			<div class="form-pair" v-if="auto.generationId || auto.yearReleased">
 				<div class="input-group">
 					<span>Модификация</span>
 					<el-form-item
@@ -137,21 +137,24 @@
 						<el-select
 							size="large"
 							clearable
+							class="multiline-option"
 							placeholder="Выберите модификацию"
 							@change="getComplectations(auto.modificationId)"
 							v-model="auto.modificationId">
 							<el-option
-								class="two_row frame_pub_st"
+								class="option-content"
 								v-for="item in modifications"
 								:key="item.id"
 								:label="item.name"
-								:value="item.id" />
+								:value="item.id">
+								<span class="option-title">{{ item.name }}</span>
+							</el-option>
 						</el-select>
 					</el-form-item>
 				</div>
 
 				<div class="input-group">
-					<span>Пробег</span>
+					<span>Пробег, км</span>
 					<el-form-item
 						prop="mileage"
 						:rules="{
@@ -175,7 +178,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair" style="margin-bottom: 20px">
+			<div class="form-pair" style="margin-bottom: 20px" v-if="auto.modificationId || auto.mileage">
 				<div class="input-group">
 					<span>Количество владельцев по ПТС</span>
 					<el-form-item
@@ -213,7 +216,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair">
+			<div class="form-pair" v-if="auto.countHostsByVC || auto.comment">
 				<div class="input-group">
 					<span>Телефон</span>
 					<el-form-item
@@ -251,7 +254,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair">
+			<div class="form-pair" v-if="auto.phone || auto.email">
 				<div class="input-group">
 					<span>Город</span>
 					<el-form-item
@@ -293,13 +296,33 @@
 		<div style="margin-top: 20px">
 			<el-button size="large" @click="removeDatas()"> Очистить </el-button>
 
-			<el-button type="primary" size="large" @click="nextPage()">Сохранить</el-button>
+			<el-button type="primary" size="large" @click="sendAuto()">Отправить данные </el-button>
+		</div>
+
+		<div style="width: 100%">
+			<p style="font-size: 12px">
+				* Введенные данные будут храниться в кэше браузера, до тех пор, пока не очистите.
+			</p>
 		</div>
 	</div>
 </template>
+
+<style scoped>
+/* многострочные комбобоксы */
+.option-content {
+	display: flex;
+	width: 300px;
+	flex-direction: column;
+	white-space: normal;
+	word-break: break-word;
+	line-height: 1.2;
+	height: 40px;
+}
+</style>
+
 <script setup>
 import { ref } from 'vue';
-import {ElMessageBox} from "element-plus";
+import { ElMessageBox, ElMessage } from 'element-plus';
 // import { Calendar } from '@element-plus/icons-vue';
 // import { lo } from 'element-plus/es/locales.mjs';
 import {
@@ -310,6 +333,7 @@ import {
 	numberWithSpaces,
 	simplePhone,
 	checkMili,
+	checkEmptyFields,
 } from './GlobFuntions.js';
 import { usePubStore } from './pubStore.js';
 
@@ -336,30 +360,62 @@ const models = ref([]);
 const generations = ref([]);
 const years = ref([]);
 const modifications = ref([]);
-const cities = ref([]);
+const cities = ref(["Альметьевск",
+  "Бавлы",
+  "Белгород",
+  "Бугульма",
+  "Буинск",
+  "Волгоград",
+  "Грозный",
+  "Екатеринбург",
+  "Ижевск",
+  "Йошкар-Ола",
+  "Казань",
+  "Москва",
+  "Набережные Челны",
+  "Нижнекамск",
+  "Октябрьский",
+  "Омск",
+  "Пермь",
+  "Россия",
+  "Самара",
+  "Саранск",
+  "Саратов",
+  "Стерлитамак",
+  "Сургут",
+  "Сызрань",
+  "Томск",
+  "Тюмень",
+  "Ульяновск",
+  "Уфа",
+  "хз",
+  "Чайковский",
+  "Чебоксары",
+  "Челябинск",
+  "Чехов"])
 const formRef = ref();
 const isWaiting = ref(false);
-const mileage500 = ref(null)
+// const mileage500 = ref(null);
 
 let timerSave = null;
 
-let datas = localStorage.getItem('datas')
+let datas = localStorage.getItem('datas');
 if (datas) {
-  isDatas.value = true
-  fillDields(JSON.parse(datas))
+	isDatas.value = true;
+	fillDields(JSON.parse(datas));
 }
 
 function fillDields(datas) {
-  // заполняем сохраненными данными
-  auto.value = {}
+	// заполняем сохраненными данными
+	auto.value = {};
 
-  Object.assign(auto.value, datas)
-  if (auto.value.brandId) getModels(auto.value.brandId, true)
-  if (auto.value.modelId) getGenerations(auto.value.modelId, true)
-  if (auto.value.generationId) getModifications(auto.value.generationId, true)
-  if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 1000
+	Object.assign(auto.value, datas);
+	if (auto.value.brandId) getModels(auto.value.brandId, true);
+	if (auto.value.modelId) getGenerations(auto.value.modelId, true);
+	if (auto.value.generationId) getModifications(auto.value.generationId, true);
+	// if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 1000;
 
-  auto.value.email = auto.value.email || ''
+	auto.value.email = auto.value.email || '';
 }
 
 function datasSaved() {
@@ -377,14 +433,15 @@ function datasSaved() {
 		if (timerSave) clearTimeout(timerSave);
 		timerSave = setTimeout(() => {
 			localStorage.setItem('datas', JSON.stringify(val));
-			console.log(' - - - - - - - - -  ');
 		}, 200);
 	}
 }
 
 function changeMiles() {
-	if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 5000;
+	//if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 5000 + ' км';
 }
+
+const resetForm = formEl => formEl && formEl.resetFields();
 
 function remove() {
 	localStorage.removeItem('datas');
@@ -398,19 +455,25 @@ function remove() {
 }
 
 function removeDatas() {
-  ElMessageBox.confirm('Вы действительно хотите удалить?', 'Внимание', {
-    confirmButtonText: 'Да',
-    cancelButtonText: 'Нет'
-  })
-      .then(() => remove())
+	ElMessageBox.confirm(
+		'Вы действительно хотите очистить форму?',
+		'Внимание',
+		{
+			confirmButtonText: 'Да',
+			cancelButtonText: 'Нет',
+		},
+	).then(() => remove());
 }
-function nextPage() {}
 
 isWaiting.value = true;
 pubStore.getBrands().then(res => {
 	brands.value = res.data;
 	isWaiting.value = false;
 });
+
+// pubStore.getCities().then(res => {
+// 	console.log('res', res)
+// });
 
 function getModels(id, noClear) {
 	// удалим связку
@@ -488,5 +551,52 @@ function getComplectations(id) {
 	pubStore.getComplectations(id).then(() => {
 		datasSaved();
 	});
+}
+
+
+
+function sendAuto() {
+	checkEmptyFields(formRef.value).then(res => {
+		// проверка заполненности обязательных полей
+		//if (res) 
+		save();
+	});
+}
+
+function save() {
+	let car = modifications.value.find(el => (el.modificationId = auto.value.modificationId));
+
+	let newAuto = JSON.parse(JSON.stringify(auto.value));
+	newAuto.mileage = numberNoSpace(newAuto.mileage);
+	newAuto.phone = simplePhone(newAuto.phone);
+	newAuto.engineType = car.engineType;
+	newAuto.driveType = car.driveType;
+	newAuto.gearboxType = car.gearboxType;
+	newAuto.bodyType = car.bodyType;
+	newAuto.enginePower = car.enginePower;
+	newAuto.engineCapacity = car.engineCapacity;
+	newAuto.doorsCount = car.doorsCount;
+	if (!newAuto.email) delete newAuto.email;
+
+	isWaiting.value = true;
+
+	console.log('newAuto', newAuto)
+ 
+	pubStore.saveExternalAppeal(newAuto).then(
+		res => {
+			isWaiting.value = false;
+			if (res.status === 200) {
+				ElMessage({
+					message:
+						'Запрос на оценку успешно отправлен, после оценки с Вами свяжется сотрудник компании Автосеть.РФ',
+					type: 'success',
+					duration: 10000,
+				});
+			//	remove();
+				// router.push('public2')
+			}
+		},
+		() => (isWaiting.value = false),
+	);
 }
 </script>

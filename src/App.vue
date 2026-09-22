@@ -5,8 +5,14 @@
 
 	<div class="form-root">
 		<el-tabs type="border-card">
-			<el-tab-pane label="Оценка">
+			<el-tab-pane label="Описание">
 				<InputForm></InputForm>
+			</el-tab-pane>
+			<el-tab-pane label="Фото">
+				<p>Добавьте фото <br />необходимые для оценки автомобиля</p>
+			</el-tab-pane>
+			<el-tab-pane label="Детали">
+				<p>Опишите, если есть какие-то повреждения</p>
 			</el-tab-pane>
 		</el-tabs>
 		<div class="form-rigth"></div>
