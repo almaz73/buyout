@@ -5,7 +5,8 @@
 }
 .form-rigth {
 	width: 420px;
-	border: 1px solid gray;
+
+	border: 1px solid var(--el-border-color);
 }
 
 .form-auto {
@@ -25,3 +26,17 @@
 	min-width: 315px;
 }
 
+:root {
+	/*  Меняем основной цвет библиотеки elementplus */
+	--el-color-primary: #e22427 !important;
+}
+
+.el-upload {
+	width: 150px;
+	min-height: 150px;
+
+	display: contents;
+	/* background: pink; */
+	border: 1px dotted #ddd;
+	overflow: hidden;
+}
