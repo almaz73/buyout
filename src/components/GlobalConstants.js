@@ -509,6 +509,14 @@ export const PhotoNumberBuyer = {
 	307: 'Багажник',
 	308: 'Педальный узел',
 };
+export const pictures = {
+	10: '/src/components/fl45.jpg',
+	20: '/src/components/br45.jpg',
+	22: '/src/components/board.jpg',
+	290: '/src/components/panel.jpg',
+	19: '/src/components/fr45.jpg',
+	11: '/src/components/bl45.jpg',
+};
 
 export const inspectionItemCategoryWithIndex = {
 	10: { id: 30, name: 'Внеш. Осмотр кузова' },

@@ -2,13 +2,13 @@
 	<div style="min-height: 150px; width: 150px; margin: 8px">
 		<div class="avatar-uploader">
 			<div class="el-upload">
-				<button
+				<span
 					v-if="!showPhoto"
-					style="margin: 0 55px; padding: 12px 15px; border: none; cursor: pointer"
+					style="margin: 0 55px; padding: 5px; border: none; cursor: pointer"
 					@click="upload()">
-					+
-
-				</button>
+					<img :src="props.photoSrc" />
+					<span style="display: flex; justify-content: center">+</span>
+				</span>
 
 				<div
 					v-if="showPhoto"
@@ -19,9 +19,6 @@
 				<input ref="Upload__input_galery" accept="image/*" type="file" style="display: none" />
 
 				<img ref="imagePreview" alt="" style="width: 100%" />
-				<!-- <div class="photo-upload">
-					
-				</div> -->
 			</div>
 
 			<div
@@ -43,8 +40,10 @@
 
 <script setup>
 import { ElMessageBox } from 'element-plus';
-import { rotatePhoto } from './GlobFuntions.js';
 import { ref } from 'vue';
+
+const props = defineProps(['photoSrc']);
+console.log('props', props);
 
 const showPhoto = ref(false);
 let originalWidth = null;
@@ -58,6 +57,7 @@ const imagePreview = ref(null);
 
 function upload() {
 	console.log('showPhoto = ', showPhoto.value);
+
 	ElMessageBox.confirm('', 'Выберите фото для загрузки', {
 		confirmButtonText: 'Камера',
 		cancelButtonText: 'Галерея',

@@ -31,6 +31,7 @@ export default defineConfig({
 
 				// Настройка имен для статических ресурсов (CSS, изображения, шрифты)
 				assetFileNames: 'buyout.[ext]',
+				assetsInlineLimit: 4096, // Лимит в байтах (4 КБ по умолчанию), фотки перевести base64
 			},
 		},
 	},
