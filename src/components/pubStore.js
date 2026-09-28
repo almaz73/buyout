@@ -26,10 +26,10 @@ export const usePubStore = defineStore('pubStore', {
 		async getComplectations(id) {
 			return await axios.get(`/api/auto/getComplectations?modificationId=${id}`);
 		},
-		// async getCities() {  
-        //     // todo          
-        //     return await axios.get(`/api/location/get/list`);
-		// },
+		async getCities() {  
+            // todo          
+            return await axios.get(`/api/location/get/list`);
+		},
 		async saveExternalAppeal(params) {
 			return await axios.post(`/api/Appeals/PostExternalAppeal`, params);
 		},

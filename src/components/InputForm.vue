@@ -296,12 +296,26 @@
 		<div style="margin-top: 20px">
 			<el-button size="large" @click="removeDatas()"> Очистить </el-button>
 
-			<el-button type="primary" size="large" @click="sendAuto()">Отправить данные </el-button>
+			<el-button
+				type="primary"
+				size="large"
+				@click="
+					sendAuto();
+					firstClick();
+				"
+				>Отправить данные
+			</el-button>
 		</div>
 
 		<div style="width: 100%">
 			<p style="font-size: 12px">
 				* Введенные данные будут храниться в кэше браузера, до тех пор, пока не очистите.
+			</p>
+		</div>
+		<div style="width: 100%" v-if="isFirstClick">
+			<p style="font-size: 12px; background: yellow">
+				* Для получения более точного ответа, нужно приложить фотки, которые можно
+				добавить в следующем блоке.
 			</p>
 		</div>
 	</div>
@@ -323,8 +337,6 @@
 <script setup>
 import { ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
-// import { Calendar } from '@element-plus/icons-vue';
-// import { lo } from 'element-plus/es/locales.mjs';
 import {
 	checkVIN,
 	emailValidate,
@@ -336,6 +348,7 @@ import {
 	checkEmptyFields,
 } from './GlobFuntions.js';
 import { usePubStore } from './pubStore.js';
+import { lo } from 'element-plus/es/locales.mjs';
 
 const pubStore = usePubStore();
 const auto = ref({
@@ -360,39 +373,42 @@ const models = ref([]);
 const generations = ref([]);
 const years = ref([]);
 const modifications = ref([]);
-const cities = ref(["Альметьевск",
-  "Бавлы",
-  "Белгород",
-  "Бугульма",
-  "Буинск",
-  "Волгоград",
-  "Грозный",
-  "Екатеринбург",
-  "Ижевск",
-  "Йошкар-Ола",
-  "Казань",
-  "Москва",
-  "Набережные Челны",
-  "Нижнекамск",
-  "Октябрьский",
-  "Омск",
-  "Пермь",
-  "Россия",
-  "Самара",
-  "Саранск",
-  "Саратов",
-  "Стерлитамак",
-  "Сургут",
-  "Сызрань",
-  "Томск",
-  "Тюмень",
-  "Ульяновск",
-  "Уфа",
-  "хз",
-  "Чайковский",
-  "Чебоксары",
-  "Челябинск",
-  "Чехов"])
+const isFirstClick = ref(false);
+const cities = ref([
+	'Альметьевск',
+	'Бавлы',
+	'Белгород',
+	'Бугульма',
+	'Буинск',
+	'Волгоград',
+	'Грозный',
+	'Екатеринбург',
+	'Ижевск',
+	'Йошкар-Ола',
+	'Казань',
+	'Москва',
+	'Набережные Челны',
+	'Нижнекамск',
+	'Октябрьский',
+	'Омск',
+	'Пермь',
+	'Россия',
+	'Самара',
+	'Саранск',
+	'Саратов',
+	'Стерлитамак',
+	'Сургут',
+	'Сызрань',
+	'Томск',
+	'Тюмень',
+	'Ульяновск',
+	'Уфа',
+	'хз',
+	'Чайковский',
+	'Чебоксары',
+	'Челябинск',
+	'Чехов',
+]);
 const formRef = ref();
 const isWaiting = ref(false);
 // const mileage500 = ref(null);
@@ -455,14 +471,10 @@ function remove() {
 }
 
 function removeDatas() {
-	ElMessageBox.confirm(
-		'Вы действительно хотите очистить форму?',
-		'Внимание',
-		{
-			confirmButtonText: 'Да',
-			cancelButtonText: 'Нет',
-		},
-	).then(() => remove());
+	ElMessageBox.confirm('Вы действительно хотите очистить форму?', 'Внимание', {
+		confirmButtonText: 'Да',
+		cancelButtonText: 'Нет',
+	}).then(() => remove());
 }
 
 isWaiting.value = true;
@@ -471,9 +483,9 @@ pubStore.getBrands().then(res => {
 	isWaiting.value = false;
 });
 
-// pubStore.getCities().then(res => {
-// 	console.log('res', res)
-// });
+pubStore.getCities().then(res => {
+	console.log('res', res);
+});
 
 function getModels(id, noClear) {
 	// удалим связку
@@ -553,14 +565,17 @@ function getComplectations(id) {
 	});
 }
 
-
-
 function sendAuto() {
+	if (!isFirstClick.value) return false;
 	checkEmptyFields(formRef.value).then(res => {
 		// проверка заполненности обязательных полей
-		//if (res) 
-		save();
+		if (res) save();
 	});
+}
+
+function firstClick() {
+	console.log(1111);
+	isFirstClick.value = true;
 }
 
 function save() {
@@ -580,8 +595,8 @@ function save() {
 
 	isWaiting.value = true;
 
-	console.log('newAuto', newAuto)
- 
+	console.log('newAuto', newAuto);
+
 	pubStore.saveExternalAppeal(newAuto).then(
 		res => {
 			isWaiting.value = false;
@@ -592,7 +607,7 @@ function save() {
 					type: 'success',
 					duration: 10000,
 				});
-			//	remove();
+				//	remove();
 				// router.push('public2')
 			}
 		},

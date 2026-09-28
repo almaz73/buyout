@@ -28,7 +28,7 @@ import panel from '/src/components/panel.jpg';
 const pictures = { 10: fl45, 20: br45, 22: board, 290: panel, 19: fr45, 11: bl45 };
 
 const photos = ref({});
-const mandatoryPhotoList = [10, 20, 22, 290, 19, 11];
+const mandatoryPhotoList = [10, 19, 22, 290, 20, 11];
 
 function setNewPhoto() {}
 function deletePhoto() {}

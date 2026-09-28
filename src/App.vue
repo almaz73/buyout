@@ -19,8 +19,7 @@ import InputForm from './components/InputForm.vue';
 			</el-tab-pane>
 		</el-tabs>
 	</div>
+	<br />
+	<br />
+	<br />
 </template>
-
-<style>
-
-</style>

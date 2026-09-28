@@ -43,7 +43,6 @@ import { ElMessageBox } from 'element-plus';
 import { ref } from 'vue';
 
 const props = defineProps(['photoSrc']);
-console.log('props', props);
 
 const showPhoto = ref(false);
 let originalWidth = null;
