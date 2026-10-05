@@ -35,6 +35,7 @@ export const simplePhone = function (val) {
 export function numberWithSpaces(x) { //добавление пробелов для удобного отображении цен
     if (!x) return 0
     let x_ = parseInt(x.toString().replace(/ /g, ''))
+    if (isNaN(x_)) x_ = 0;
     return x_.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 

@@ -170,7 +170,6 @@
 							@change="datasSaved()"
 							@input="
 								() => {
-									changeMiles();
 									auto.mileage = numberWithSpaces(auto.mileage);
 								}
 							" />
@@ -296,15 +295,7 @@
 		<div style="margin-top: 20px">
 			<el-button size="large" @click="removeDatas()"> Очистить </el-button>
 
-			<el-button
-				type="primary"
-				size="large"
-				@click="
-					sendAuto();
-					firstClick();
-				"
-				>Отправить данные
-			</el-button>
+			<el-button type="primary" size="large" @click="sendAuto()">Отправить данные </el-button>
 		</div>
 
 		<div style="width: 100%">
@@ -359,14 +350,13 @@ const auto = ref({
 	generationId: '',
 	yearReleased: '',
 	modificationId: '',
-	mileage: '',
+	mileage: 0,
 	countHostsByVC: 0,
 	comment: '',
 	phone: '',
 	email: '',
 	city: '',
 	fullName: '',
-	mileage: '',
 });
 const isDatas = ref();
 const brands = ref([]);
@@ -412,7 +402,6 @@ const cities = ref([
 ]);
 const formRef = ref();
 const isWaiting = ref(false);
-// const mileage500 = ref(null);
 
 let timerSave = null;
 
@@ -454,9 +443,6 @@ function datasSaved() {
 	}
 }
 
-function changeMiles() {
-	//if (auto.value.mileage) mileage500.value = numberNoSpace(auto.value.mileage) / 5000 + ' км';
-}
 
 const resetForm = formEl => formEl && formEl.resetFields();
 
@@ -484,9 +470,9 @@ pubStore.getBrands().then(res => {
 	isWaiting.value = false;
 });
 
-pubStore.getCities().then(res => {
-	console.log('res', res);
-});
+// pubStore.getCities().then(res => {
+// 	console.log('res', res);
+// });
 
 function getModels(id, noClear) {
 	// удалим связку
@@ -567,15 +553,16 @@ function getComplectations(id) {
 }
 
 function sendAuto() {
-	if (!isFirstClick.value) return false;
 	checkEmptyFields(formRef.value).then(res => {
 		// проверка заполненности обязательных полей
-		if (res) save();
+		if (res) {
+			if (!isFirstClick.value) {
+				isFirstClick.value = true;
+				return false;
+			}
+			save();
+		}
 	});
-}
-
-function firstClick() {
-	isFirstClick.value = true;
 }
 
 function save() {
@@ -596,11 +583,6 @@ function save() {
 
 	isWaiting.value = true;
 
-	console.log('newAuto', newAuto);
-
-	let zzz = getCities();
-	console.log('zzz=', zzz);
-
 	pubStore.saveExternalAppeal(newAuto).then(
 		res => {
 			isWaiting.value = false;
@@ -611,11 +593,19 @@ function save() {
 					type: 'success',
 					duration: 10000,
 				});
-				//	remove();
-				// router.push('public2')
+				remove();
+			} else {
+				ElMessage({
+					message: 'Не получилось отправить сообщение',
+					type: 'error',
+					duration: 10000,
+				});
 			}
 		},
-		() => (isWaiting.value = false),
+		err => {
+			console.log('errerr', err);
+			isWaiting.value = false;
+		},
 	);
 }
 </script>

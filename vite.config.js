@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+let devDir = '../autonet/front/buyout'; // 'dict'
+// devDir = 'd_i_c_t';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -23,6 +25,7 @@ export default defineConfig({
 		},
 	},
 	build: {
+		outDir: devDir, // Выходная папка
 		rollupOptions: {
 			output: {
 				// Настройка имен для обычных чанков (JS)
