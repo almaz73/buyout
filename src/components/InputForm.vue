@@ -314,8 +314,8 @@
 		</div>
 		<div style="width: 100%" v-if="isFirstClick">
 			<p style="font-size: 12px; background: yellow">
-				* Для получения более точного ответа, нужно приложить фотки, которые можно
-				добавить в следующем блоке.
+				* Для получения более точного ответа, нужно приложить фотки, которые можно добавить в
+				следующем блоке.
 			</p>
 		</div>
 	</div>
@@ -348,6 +348,7 @@ import {
 	checkEmptyFields,
 } from './GlobFuntions.js';
 import { usePubStore } from './pubStore.js';
+import { carPhotos } from './GlobalConstants.js';
 import { lo } from 'element-plus/es/locales.mjs';
 
 const pubStore = usePubStore();
@@ -574,7 +575,6 @@ function sendAuto() {
 }
 
 function firstClick() {
-	console.log(1111);
 	isFirstClick.value = true;
 }
 
@@ -591,11 +591,15 @@ function save() {
 	newAuto.enginePower = car.enginePower;
 	newAuto.engineCapacity = car.engineCapacity;
 	newAuto.doorsCount = car.doorsCount;
+	if (carPhotos && carPhotos.length) newAuto.carPhotos = carPhotos;
 	if (!newAuto.email) delete newAuto.email;
 
 	isWaiting.value = true;
 
 	console.log('newAuto', newAuto);
+
+	let zzz = getCities();
+	console.log('zzz=', zzz);
 
 	pubStore.saveExternalAppeal(newAuto).then(
 		res => {

@@ -23,7 +23,7 @@
 
 			<div
 				class="buttons"
-				style="display: flex; justify-content: center; margin-top: 8px"
+				style="display: flex; justify-content: center; margin-top: 8px; gap: 8px"
 				v-if="showPhoto">
 				<img @click="upload()" alt="" src="./icon-edit-dark.png" />
 				<img @click="deleteFile()" alt="" src="./icon-delete-dark.png" />
@@ -42,7 +42,9 @@
 import { ElMessageBox } from 'element-plus';
 import { ref } from 'vue';
 
-const props = defineProps(['photoSrc']);
+const isMobile = navigator.userAgentData ? navigator.userAgentData.mobile : false;
+const props = defineProps(['photoSrc', 'id']);
+const emits = defineEmits(['setNewPhoto']);
 
 const showPhoto = ref(false);
 let originalWidth = null;
@@ -57,27 +59,31 @@ const imagePreview = ref(null);
 function upload() {
 	console.log('showPhoto = ', showPhoto.value);
 
-	ElMessageBox.confirm('', 'Выберите фото для загрузки', {
-		confirmButtonText: 'Камера',
-		cancelButtonText: 'Галерея',
-		center: true,
-	})
-		.then(res => {
-			console.log('Upload__input.value = ', Upload__input.value);
-			Upload__input.value.click();
-			Upload__input.value.addEventListener('change', photoInp);
+	if (isMobile) {
+		ElMessageBox.confirm('', 'Выберите фото для загрузки', {
+			confirmButtonText: 'Камера',
+			cancelButtonText: 'Галерея',
+			center: true,
 		})
-		.catch(res => {
-			console.log('Upload__input_galery = ', Upload__input_galery.value);
-			Upload__input_galery.value.click();
-			Upload__input_galery.value.addEventListener('change', photoInp);
-		});
+			.then(res => {
+				console.log('Upload__input.value = ', Upload__input.value);
+				Upload__input.value.click();
+				Upload__input.value.addEventListener('change', photoInp);
+			})
+			.catch(res => {
+				console.log('Upload__input_galery = ', Upload__input_galery.value);
+				Upload__input_galery.value.click();
+				Upload__input_galery.value.addEventListener('change', photoInp);
+			});
+	} else {
+		Upload__input.value.click();
+		Upload__input.value.addEventListener('change', photoInp);
+	}
 }
 
 function photoInp(e) {
 	if (e.target.files && e.target.files[0]) {
 		const file = e.target.files[0];
-
 		const reader = new FileReader();
 
 		reader.onload = function (e) {
@@ -95,7 +101,8 @@ function photoInp(e) {
 			};
 			img.src = originalImageData;
 
-			// emits('setNewPhoto', originalImageData);
+			let photo = { name: file.name, file: originalImageData };
+			emits('setNewPhoto', 'addPhoto', props.id, photo);
 		};
 
 		reader.readAsDataURL(file);
@@ -111,6 +118,6 @@ function removeEventListener() {
 function deleteFile() {
 	imagePreview.value.src = null;
 	showPhoto.value = false;
-	// emits('deletePhoto', props.id);
+	emits('setNewPhoto', 'removePhoto', props.id);
 }
 </script>

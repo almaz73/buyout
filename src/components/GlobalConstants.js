@@ -529,3 +529,8 @@ export const inspectionItemCategoryWithIndex = {
 	80: { id: 80, name: 'Прочие работы' },
 	90: { id: 90, name: 'Юридическая проверка' },
 };
+
+export let carPhotos=[]
+export function removePhotoFromCarPhotos(id) {
+	carPhotos = carPhotos.filter(el=>el.id!=id)
+}
