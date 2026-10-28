@@ -1,8 +1,8 @@
-import {defineStore} from "pinia";
-import axios from "axios";
-import { lo } from "element-plus/es/locales.mjs";
+import { defineStore } from 'pinia';
+import axios from 'axios';
+import { lo } from 'element-plus/es/locales.mjs';
 
-const cache = {}
+const cache = {};
 
 export const usePubStore = defineStore('pubStore', {
 	state: () => ({
@@ -26,9 +26,8 @@ export const usePubStore = defineStore('pubStore', {
 		async getComplectations(id) {
 			return await axios.get(`/api/auto/getComplectations?modificationId=${id}`);
 		},
-		async getCities() {  
-            // todo          
-            return await axios.get(`/api/location/get/list`);
+		async getCities() {
+			return await axios.get(`/api/auto/getCities`);
 		},
 		async saveExternalAppeal(params) {
 			return await axios.post(`/api/Appeals/PostExternalAppeal`, params);

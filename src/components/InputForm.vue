@@ -215,7 +215,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair" v-if="auto.countHostsByVC || auto.comment">
+			<div class="form-pair">
 				<div class="input-group">
 					<span>Телефон</span>
 					<el-form-item
@@ -253,7 +253,7 @@
 				</div>
 			</div>
 
-			<div class="form-pair" v-if="auto.phone || auto.email">
+			<div class="form-pair">
 				<div class="input-group">
 					<span>Город</span>
 					<el-form-item
@@ -262,6 +262,7 @@
 						<el-select
 							size="large"
 							clearable
+							filterable
 							placeholder="Выберите город"
 							@change="datasSaved()"
 							v-model="auto.city">
@@ -339,8 +340,7 @@ import {
 	checkEmptyFields,
 } from './GlobFuntions.js';
 import { usePubStore } from './pubStore.js';
-import { carPhotos } from './GlobalConstants.js';
-import { lo } from 'element-plus/es/locales.mjs';
+import { carPhotos, removePhotoFromCarPhotos } from './GlobalConstants.js';
 
 const pubStore = usePubStore();
 const auto = ref({
@@ -443,7 +443,6 @@ function datasSaved() {
 	}
 }
 
-
 const resetForm = formEl => formEl && formEl.resetFields();
 
 function remove() {
@@ -455,6 +454,8 @@ function remove() {
 	generations.value = [];
 	modifications.value = [];
 	years.value = [];
+	isFirstClick.value = false;
+	removePhotoFromCarPhotos();
 }
 
 function removeDatas() {
@@ -470,9 +471,9 @@ pubStore.getBrands().then(res => {
 	isWaiting.value = false;
 });
 
-// pubStore.getCities().then(res => {
-// 	console.log('res', res);
-// });
+pubStore.getCities().then(res => {
+	cities.value = res.data.items;
+});
 
 function getModels(id, noClear) {
 	// удалим связку
