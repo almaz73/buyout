@@ -280,7 +280,13 @@
 					<span>ФИО</span>
 					<el-form-item
 						prop="fullName"
-						:rules="{ required: true, message: 'Не выбрано Имя', trigger: ['blur', 'change'] }">
+						:rules="[
+							{ required: true, message: 'Не выбрано Имя', trigger: ['blur', 'change'] },
+							{
+								validator: checkFullName,
+								trigger: ['blur', 'change'],
+							},
+						]">
 						<el-input
 							input-style="500px"
 							@change="datasSaved()"
@@ -301,7 +307,7 @@
 
 		<div style="width: 100%">
 			<p style="font-size: 12px">
-				* Введенные данные будут храниться в кэше браузера, до тех пор, пока не очистите.
+				* Введенные данные будут храниться в кэше браузера, до тех пор, пока не очистите
 			</p>
 		</div>
 		<div style="width: 100%" v-if="isFirstClick">
@@ -338,6 +344,7 @@ import {
 	simplePhone,
 	checkMili,
 	checkEmptyFields,
+	checkFullName,
 } from './GlobFuntions.js';
 import { usePubStore } from './pubStore.js';
 import { carPhotos, removePhotoFromCarPhotos } from './GlobalConstants.js';

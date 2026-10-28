@@ -53,9 +53,9 @@ export const emailValidate = function (val) {
 // Функция для проверки полей на заполненность
 export function checkEmptyFields(formEl) {
     return formEl && formEl.validate((valid, a) => {
-        const empty = a && Object.entries(a).find(el => !el[1].fieldValue)
-        empty && ElMessage({message: `${empty[1][0].message}`, type: 'error'})
-        return !valid
+        if (valid || !a) return
+        const firstError = Object.values(a)[0]
+        firstError && ElMessage({message: `${firstError[0].message}`, type: 'error'})
     })
 }
 
@@ -65,6 +65,14 @@ const vinRegex = new RegExp("^[A-HJ-NPR-Z\\d]{13}\\d{4}$", "i");
 export function checkVIN(rule, value, callback) {
     if (!value) callback('Поле VIN не заполнено')
     else if (!value.match(vinRegex) || value.length != 17) callback('Ошибочный VIN')
+    else callback()
+}
+
+// ФИО должно состоять только из букв, пробелов и дефисов, минимум одна буква
+const fullNameRegex = /^(?=.*[A-Za-zА-Яа-яЁё])[A-Za-zА-Яа-яЁё\s-]+$/u;
+
+export function checkFullName(rule, value, callback) {
+    if (!fullNameRegex.test(value)) callback(new Error('Имя должно состоять только из букв'))
     else callback()
 }
 
