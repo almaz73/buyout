@@ -196,6 +196,44 @@
 				</div>
 
 				<div class="input-group">
+					<span>Состояние автомобиля</span>
+					<div class="categoryButtons">
+						<el-button
+							@click="setCategiry(1)"
+							:type="auto.categoryAuto === 1 ? 'primary' : ''"
+							title="Целый, 1 съем"
+							>A</el-button
+						>
+						<el-button
+							@click="setCategiry(2)"
+							:type="auto.categoryAuto === 2 ? 'primary' : ''"
+							title="Окрас до 3-х элементов, кроме капота"
+							>B</el-button
+						>
+						<el-button
+							@click="setCategiry(3)"
+							:type="auto.categoryAuto === 3 ? 'primary' : ''"
+							title="Окрас до 5 элементов, кроме переда полностью. Окрашен капот"
+							>C</el-button
+						>
+						<el-button
+							@click="setCategiry(4)"
+							:type="auto.categoryAuto === 4 ? 'primary' : ''"
+							title="Окрашен перед (капот, два крыла), восстановлена рамка телевизора. Окрашена крыша или люые сидовые агрегаты кузова (стойки, лонжероны и т.д). Полный окрас"
+							>D</el-button
+						>
+						<el-button
+							@click="setCategiry(5)"
+							:type="auto.categoryAuto === 5 ? 'primary' : ''"
+							title="(авто с большим кол-вом дефектов, вложения в которые не окупятся. Стоимость до 300 тыс.руб.)"
+							>S</el-button
+						>
+					</div>
+				</div>				
+			</div>
+
+			<div class="form-pair">
+				<div class="input-group">
 					<span>Описание повреждений</span>
 					<el-form-item
 						title="Указываются ранее крашенные элементы, все текущие повреждения (узлы, агрегаты, жестянка)"
@@ -212,44 +250,6 @@
 							v-model="auto.comment"
 							placeholder="Укажите  повреждения" />
 					</el-form-item>
-				</div>
-			</div>
-
-			<div class="form-pair">
-				<div class="input-group">
-					<span>Категория автомобиля</span>
-					<div class="categoryButtons">
-						<el-button
-							@click="setCategiry(1)"
-							:type="auto.categoryAuto === 1 ? 'primary' : ''"
-							title="Мини-автомобили / Сити-кары"
-							>A</el-button
-						>
-						<el-button
-							@click="setCategiry(2)"
-							:type="auto.categoryAuto === 2 ? 'primary' : ''"
-							title="Малые автомобили"
-							>B</el-button
-						>
-						<el-button
-							@click="setCategiry(3)"
-							:type="auto.categoryAuto === 3 ? 'primary' : ''"
-							title="Гольф-класс / Средний малый класс"
-							>C</el-button
-						>
-						<el-button
-							@click="setCategiry(4)"
-							:type="auto.categoryAuto === 4 ? 'primary' : ''"
-							title="Большой семейный / Средний класс"
-							>D</el-button
-						>
-						<el-button
-							@click="setCategiry(5)"
-							:type="auto.categoryAuto === 5 ? 'primary' : ''"
-							title="Спорткары, купе и суперкары"
-							>S</el-button
-						>
-					</div>
 				</div>
 			</div>
 			<br />
@@ -464,7 +464,7 @@ function setCategiry(type) {
 
 function fillDields(datas) {
 	// заполняем сохраненными данными
-	auto.value = {};
+	auto.value = {categoryAuto: 3,mileage: 0,	countHostsByVC: 0};
 
 	Object.assign(auto.value, datas);
 	if (auto.value.brandId) getModels(auto.value.brandId, true);
@@ -499,7 +499,7 @@ const resetForm = formEl => formEl && formEl.resetFields();
 function remove() {
 	localStorage.removeItem('datas');
 	isDatas.value = null;
-	auto.value = {};
+	auto.value = {categoryAuto: 3,mileage: 0,	countHostsByVC: 0};
 	resetForm(formRef.value);
 	models.value = [];
 	generations.value = [];
@@ -641,7 +641,7 @@ function save() {
 			if (res.status === 200) {
 				ElMessage({
 					message:
-						'Запрос на оценку успешно отправлен, после оценки с Вами свяжется сотрудник компании Автосеть.РФ',
+						'Запрос на оценку успешно отправлен! Пкаосле оценки с Вами свяжется сотрудник компании Автосеть.РФ',
 					type: 'success',
 					duration: 10000,
 				});
