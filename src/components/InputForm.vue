@@ -217,6 +217,45 @@
 
 			<div class="form-pair">
 				<div class="input-group">
+					<span>Категория автомобиля</span>
+					<div class="categoryButtons">
+						<el-button
+							@click="setCategiry(1)"
+							:type="auto.categoryAuto === 1 ? 'primary' : ''"
+							title="Мини-автомобили / Сити-кары"
+							>A</el-button
+						>
+						<el-button
+							@click="setCategiry(2)"
+							:type="auto.categoryAuto === 2 ? 'primary' : ''"
+							title="Малые автомобили"
+							>B</el-button
+						>
+						<el-button
+							@click="setCategiry(3)"
+							:type="auto.categoryAuto === 3 ? 'primary' : ''"
+							title="Гольф-класс / Средний малый класс"
+							>C</el-button
+						>
+						<el-button
+							@click="setCategiry(4)"
+							:type="auto.categoryAuto === 4 ? 'primary' : ''"
+							title="Большой семейный / Средний класс"
+							>D</el-button
+						>
+						<el-button
+							@click="setCategiry(5)"
+							:type="auto.categoryAuto === 5 ? 'primary' : ''"
+							title="Спорткары, купе и суперкары"
+							>S</el-button
+						>
+					</div>
+				</div>
+			</div>
+			<br />
+
+			<div class="form-pair">
+				<div class="input-group">
 					<span>Телефон</span>
 					<el-form-item
 						prop="phone"
@@ -364,6 +403,7 @@ const auto = ref({
 	email: '',
 	city: '',
 	fullName: '',
+	categoryAuto: 3,
 });
 const isDatas = ref();
 const brands = ref([]);
@@ -416,6 +456,10 @@ let datas = localStorage.getItem('datas');
 if (datas) {
 	isDatas.value = true;
 	fillDields(JSON.parse(datas));
+}
+
+function setCategiry(type) {
+	auto.value.categoryAuto = type;
 }
 
 function fillDields(datas) {
